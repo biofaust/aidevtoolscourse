@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Modifica{% else %}Crea{% endif %} attività{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="margin-top: 0;">{% if object %}Modifica{% else %}Crea{% endif %} attività</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<div class="muted">{{ field.help_text }}</div>{% endif %}
+                {% for error in field.errors %}<div style="color: #d73a49;">{{ error }}</div>{% endfor %}
+            </div>
+        {% endfor %}
+        <div class="actions">
+            <button type="submit" class="btn btn-primary">{% if object %}Salva{% else %}Crea{% endif %}</button>
+            <a class="btn btn-outline" href="{% url 'tasks:list' %}">Annulla</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

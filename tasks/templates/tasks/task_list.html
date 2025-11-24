@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Le tue cose da fare{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="margin-top: 0;">Nuova attività</h2>
+    <form action="{% url 'tasks:create' %}" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<div class="muted">{{ field.help_text }}</div>{% endif %}
+                {% for error in field.errors %}<div style="color: #d73a49;">{{ error }}</div>{% endfor %}
+            </div>
+        {% endfor %}
+        <div class="actions">
+            <button type="submit" class="btn btn-primary">Aggiungi</button>
+        </div>
+    </form>
+</div>
+
+<div class="card" style="margin-top: 1rem;">
+    <h2 style="margin-top: 0;">Attività</h2>
+    {% if tasks %}
+        <ul class="task-list">
+            {% for task in tasks %}
+                <li>
+                    <div style="flex: 1;">
+                        <div class="task-meta">
+                            <span class="pill {% if task.priority == 'high' %}pill-high{% elif task.priority == 'low' %}pill-low{% endif %}">{{ task.get_priority_display }}</span>
+                            {% if task.due_at %}<span>Scadenza: {{ task.due_at|date:"Y-m-d H:i" }}</span>{% endif %}
+                            {% if task.is_completed %}<span class="pill pill-done">Completata</span>{% endif %}
+                        </div>
+                        <div style="font-weight: 600; margin-top: 0.4rem;">{{ task.title }}</div>
+                        {% if task.description %}<div class="muted" style="margin-top: 0.25rem;">{{ task.description }}</div>{% endif %}
+                    </div>
+                    <div class="task-actions">
+                        <form action="{% url 'tasks:toggle_complete' task.pk %}" method="post">
+                            {% csrf_token %}
+                            <button class="btn btn-outline" type="submit">
+                                {% if task.is_completed %}Segna da fare{% else %}Segna completa{% endif %}
+                            </button>
+                        </form>
+                        <a class="btn btn-outline" href="{% url 'tasks:update' task.pk %}">Modifica</a>
+                        <button
+                            class="btn btn-danger btn-delete"
+                            data-delete-url="{% url 'tasks:delete' task.pk %}"
+                            data-title="{{ task.title }}"
+                            type="button"
+                        >
+                            Elimina
+                        </button>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="empty">Non ci sono attività.</div>
+    {% endif %}
+</div>
+
+<div id="delete-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+    <div class="modal">
+        <h3 id="delete-title">Elimina attività</h3>
+        <p>Sei sicuro di voler eliminare: <strong id="delete-task-title"></strong>?</p>
+        <form id="delete-form" method="post">
+            {% csrf_token %}
+            <div class="actions">
+                <button type="submit" class="btn btn-danger">Elimina</button>
+                <button type="button" class="btn btn-outline" id="delete-cancel">Annulla</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById("delete-modal");
+    const deleteForm = document.getElementById("delete-form");
+    const cancelBtn = document.getElementById("delete-cancel");
+    const deleteTitle = document.getElementById("delete-task-title");
+
+    document.querySelectorAll(".btn-delete").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            deleteForm.action = btn.dataset.deleteUrl;
+            deleteTitle.textContent = btn.dataset.title || "";
+            modal.classList.add("show");
+        });
+    });
+
+    cancelBtn.addEventListener("click", () => {
+        modal.classList.remove("show");
+    });
+
+    modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            modal.classList.remove("show");
+        }
+    });
+</script>
+{% endblock %}

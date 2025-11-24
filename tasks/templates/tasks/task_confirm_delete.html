@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Elimina attività{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="margin-top: 0;">Elimina attività</h2>
+    <p>Sei sicuro di voler eliminare <strong>{{ object.title }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="actions">
+            <button type="submit" class="btn btn-danger">Elimina</button>
+            <a class="btn btn-outline" href="{% url 'tasks:list' %}">Annulla</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
