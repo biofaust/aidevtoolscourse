@@ -1,0 +1,16 @@
+{
+  "name": "homework-2",
+  "version": "1.0.0",
+  "description": "Realtime coding rooms with shared editing, language-aware syntax highlighting, and safe in-browser execution for JavaScript/TypeScript.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c cyan,magenta \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "test": "echo \"Run tests from backend or frontend packages\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
